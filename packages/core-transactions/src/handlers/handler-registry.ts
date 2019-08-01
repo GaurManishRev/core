@@ -16,10 +16,10 @@ import { InvalidTransactionTypeError } from "../errors";
 import { TransactionHandler, TransactionHandlerConstructor } from "./transaction";
 
 export class TransactionHandlerRegistry {
-    private readonly registeredTransactionHandlers: Map<number, TransactionHandler> = new Map<
-        Enums.TransactionTypes,
+    private readonly registeredTransactionHandlers: Map<
+        Transactions.InternalTransactionType,
         TransactionHandler
-    >();
+    > = new Map();
 
     constructor() {
         this.registerTransactionHandler(TransferTransactionHandler);
@@ -35,12 +35,16 @@ export class TransactionHandlerRegistry {
         this.registerTransactionHandler(HtlcRefundTransactionHandler);
     }
 
-    public get(type: Enums.TransactionTypes | number): TransactionHandler {
-        if (this.registeredTransactionHandlers.has(type)) {
-            return this.registeredTransactionHandlers.get(type);
+    public get(type: number, chainId?: number): TransactionHandler {
+        const internalType: Transactions.InternalTransactionType = Transactions.InternalTransactionType.from(
+            type,
+            chainId,
+        );
+        if (this.registeredTransactionHandlers.has(internalType)) {
+            return this.registeredTransactionHandlers.get(internalType);
         }
 
-        throw new InvalidTransactionTypeError(type);
+        throw new InvalidTransactionTypeError(internalType.toString());
     }
 
     public async getActivatedTransactions(): Promise<TransactionHandler[]> {
@@ -58,13 +62,17 @@ export class TransactionHandlerRegistry {
     public registerTransactionHandler(constructor: TransactionHandlerConstructor) {
         const service: TransactionHandler = new constructor();
         const transactionConstructor = service.getConstructor();
-        const { type } = transactionConstructor;
+        const { chainId, type } = transactionConstructor;
 
         for (const dependency of service.dependencies()) {
             this.registerTransactionHandler(dependency);
         }
 
-        if (this.registeredTransactionHandlers.has(type)) {
+        const internalType: Transactions.InternalTransactionType = Transactions.InternalTransactionType.from(
+            type,
+            chainId,
+        );
+        if (this.registeredTransactionHandlers.has(internalType)) {
             return;
         }
 
@@ -72,24 +80,28 @@ export class TransactionHandlerRegistry {
             Transactions.TransactionRegistry.registerTransactionType(transactionConstructor);
         }
 
-        this.registeredTransactionHandlers.set(type, service);
+        this.registeredTransactionHandlers.set(internalType, service);
     }
 
     public deregisterTransactionHandler(constructor: TransactionHandlerConstructor): void {
         const service: TransactionHandler = new constructor();
         const transactionConstructor = service.getConstructor();
-        const { type } = transactionConstructor;
+        const { chainId, type } = transactionConstructor;
 
-        if (type in Enums.TransactionTypes) {
+        if (chainId === Enums.ChainId.Core || chainId === undefined) {
             throw new Error("Cannot deregister Core transaction.");
         }
 
-        if (!this.registeredTransactionHandlers.has(type)) {
-            throw new InvalidTransactionTypeError(type);
+        const internalType: Transactions.InternalTransactionType = Transactions.InternalTransactionType.from(
+            type,
+            chainId,
+        );
+        if (!this.registeredTransactionHandlers.has(internalType)) {
+            throw new InvalidTransactionTypeError(internalType.toString());
         }
 
-        Transactions.TransactionRegistry.deregisterTransactionType(type);
-        this.registeredTransactionHandlers.delete(type);
+        Transactions.TransactionRegistry.deregisterTransactionType(transactionConstructor);
+        this.registeredTransactionHandlers.delete(internalType);
     }
 }
 

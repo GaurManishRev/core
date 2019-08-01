@@ -1,4 +1,3 @@
-import { TransactionTypes } from "../../../enums";
 import { ITransactionData } from "../../../interfaces";
 import { BigNumber } from "../../../utils";
 import { TransferTransaction } from "../../types";
@@ -8,7 +7,8 @@ export class TransferBuilder extends TransactionBuilder<TransferBuilder> {
     constructor() {
         super();
 
-        this.data.type = TransactionTypes.Transfer;
+        this.data.type = TransferTransaction.type;
+        this.data.chainId = TransferTransaction.chainId;
         this.data.fee = TransferTransaction.staticFee();
         this.data.amount = BigNumber.ZERO;
         this.data.recipientId = undefined;

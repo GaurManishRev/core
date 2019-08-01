@@ -315,7 +315,10 @@ export class WalletManager implements State.IWalletManager {
     }
 
     public applyTransaction(transaction: Interfaces.ITransaction): void {
-        const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(transaction.type);
+        const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(
+            transaction.type,
+            transaction.chainId,
+        );
 
         let lockWallet: State.IWallet;
         let lockTransaction: Interfaces.ITransactionData;
@@ -336,7 +339,10 @@ export class WalletManager implements State.IWalletManager {
     public async revertTransaction(transaction: Interfaces.ITransaction): Promise<void> {
         const { data } = transaction;
 
-        const transactionHandler: TransactionInterfaces.ITransactionHandler = Handlers.Registry.get(transaction.type);
+        const transactionHandler: TransactionInterfaces.ITransactionHandler = Handlers.Registry.get(
+            transaction.type,
+            transaction.chainId,
+        );
         const sender: State.IWallet = this.findByPublicKey(data.senderPublicKey);
         const recipient: State.IWallet = this.findByAddress(data.recipientId);
 

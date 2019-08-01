@@ -11,3 +11,11 @@ export enum TransactionTypes {
     HtlcClaim = 9,
     HtlcRefund = 10,
 }
+
+export enum ChainId {
+    Null = 0,
+    Core = 1,
+
+    // Everything beyond will be monotonically increasingly assigned to Bridgechain Registrations
+    Reserved = 100000,
+}

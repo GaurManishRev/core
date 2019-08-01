@@ -17,7 +17,7 @@ export class Serializer {
 
         if (version === 1) {
             return this.getBytesV1(transaction, options);
-        } else if (configManager.getMilestone().aip11) {
+        } else if (version === 2 && configManager.getMilestone().aip11) {
             return this.serialize(TransactionTypeFactory.create(transaction), options);
         } else {
             throw new TransactionVersionError(version);
@@ -199,6 +199,7 @@ export class Serializer {
             buffer.writeByte(transaction.type);
             buffer.writeUint32(transaction.timestamp);
         } else {
+            buffer.writeUint32(transaction.chainId);
             buffer.writeUint16(transaction.type);
             buffer.writeUint64(+transaction.nonce);
         }

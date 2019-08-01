@@ -91,7 +91,7 @@ export class TransactionVersionError extends CryptoError {
 }
 
 export class UnkownTransactionError extends CryptoError {
-    constructor(given: number) {
+    constructor(given: string) {
         super(`Transaction type ${given} is not registered.`);
     }
 }

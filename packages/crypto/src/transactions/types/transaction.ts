@@ -15,6 +15,10 @@ export abstract class Transaction implements ITransaction {
         return this.data.type;
     }
 
+    public get chainId(): number {
+        return this.data.chainId;
+    }
+
     public get verified(): boolean {
         return this.isVerified;
     }
@@ -28,6 +32,7 @@ export abstract class Transaction implements ITransaction {
     }
 
     public static type: TransactionTypes = undefined;
+    public static chainId: number = undefined;
     public static key: string = undefined;
 
     public static getSchema(): TransactionSchema {

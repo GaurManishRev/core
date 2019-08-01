@@ -25,7 +25,9 @@ class Deserializer {
 
         if (data.version === 1) {
             this.applyV1Compatibility(data);
-        } else if (!configManager.getMilestone().aip11) {
+        } else if (data.version === 2 && configManager.getMilestone().aip11) {
+            //
+        } else {
             throw new TransactionVersionError(data.version);
         }
 
@@ -43,6 +45,7 @@ class Deserializer {
             transaction.type = buf.readUint8();
             transaction.timestamp = buf.readUint32();
         } else {
+            transaction.chainId = buf.readUint32();
             transaction.type = buf.readUint16();
             transaction.nonce = BigNumber.make(buf.readUint64().toString());
         }

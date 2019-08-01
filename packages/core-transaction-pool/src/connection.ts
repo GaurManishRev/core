@@ -205,7 +205,10 @@ export class Connection implements TransactionPool.IConnection {
             const { data }: Interfaces.ITransaction = transaction;
             const exists: boolean = this.has(data.id);
             const senderPublicKey: string = data.senderPublicKey;
-            const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(transaction.type);
+            const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(
+                transaction.type,
+                transaction.chainId,
+            );
 
             const senderWallet: State.IWallet = this.walletManager.hasByPublicKey(senderPublicKey)
                 ? this.walletManager.findByPublicKey(senderPublicKey)
@@ -288,7 +291,10 @@ export class Connection implements TransactionPool.IConnection {
 
             // TODO: rework error handling
             try {
-                const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(transaction.type);
+                const transactionHandler: Handlers.TransactionHandler = Handlers.Registry.get(
+                    transaction.type,
+                    transaction.chainId,
+                );
                 transactionHandler.throwIfCannotBeApplied(
                     transaction,
                     senderWallet,
@@ -423,7 +429,7 @@ export class Connection implements TransactionPool.IConnection {
 
         try {
             this.walletManager.throwIfCannotBeApplied(transaction);
-            Handlers.Registry.get(transaction.type).applyToSender(transaction, this.walletManager);
+            Handlers.Registry.get(transaction.type, transaction.chainId).applyToSender(transaction, this.walletManager);
         } catch (error) {
             this.logger.error(error.message);
 
@@ -469,7 +475,10 @@ export class Connection implements TransactionPool.IConnection {
 
                 const { sender, recipient } = this.getSenderAndRecipient(transaction, localWalletManager);
 
-                const handler: Handlers.TransactionHandler = Handlers.Registry.get(transaction.type);
+                const handler: Handlers.TransactionHandler = Handlers.Registry.get(
+                    transaction.type,
+                    transaction.chainId,
+                );
                 handler.throwIfCannotBeApplied(transaction, sender, databaseWalletManager);
 
                 handler.applyToSender(transaction, localWalletManager);
