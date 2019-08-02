@@ -1,18 +1,18 @@
 {
-    "name": "mainnet",
-    "messagePrefix": "ARK message:\n",
-    "bip32": {
-        "public": 46090600,
-        "private": 46089520
-    },
-    "pubKeyHash": 23,
-    "nethash": "6e84d08bd299ed97c212c886c98a57e36545c8f5d645ca7eeae63a8bd62d8988",
-    "wif": 170,
-    "slip44": 111,
-    "aip20": 0,
-    "client": {
-        "token": "ARK",
-        "symbol": "Ѧ",
-        "explorer": "https://explorer.ark.io"
-    }
+  "name": "mainnet",
+  "messagePrefix": "infinitydollor message:\n",
+  "bip32": {
+    "public": 46090600,
+    "private": 46089520
+  },
+  "pubKeyHash": 50,
+  "nethash": "55416e6659330dfb22dae15a7dba61bfa4c3a70f7808a7cad37b88e52c48c47a",
+  "wif": 86,
+  "slip44": 111,
+  "aip20": 0,
+  "client": {
+    "token": "infinitydollor",
+    "symbol": "INF",
+    "explorer": "http://182.75.199.242:4200"
+  }
 }
